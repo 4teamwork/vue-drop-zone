@@ -7,12 +7,29 @@
 </template>
 
 <script>
+import client from '../client';
+
 export default {
   name: 'DropZone',
   data() {
     return {
       dragCount: 0,
+      client,
     };
+  },
+  props: {
+    value: {
+      type: Array,
+      default: () => [],
+    },
+    endpoint: {
+      type: String,
+      default: () => document.URL,
+    },
+    options: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   methods: {
     handleDragEnter() {
@@ -27,8 +44,9 @@ export default {
         this.$emit('left');
       }
     },
-    handleDrop() {
+    handleDrop({ dataTransfer: { files } }) {
       this.$emit('dropped');
+      this.client.upload(Array.from(files));
     },
     preventDefault(e) { e.preventDefault(); },
   },
@@ -41,10 +59,15 @@ export default {
      */
     window.addEventListener('dragover', this.preventDefault);
     window.addEventListener('drop', this.preventDefault);
+
+    this.client.init(this, Object.assign(this.options, { endpoint: this.endpoint }));
   },
   destroyed() {
     window.removeEventListener('dragover', this.preventDefault);
     window.removeEventListener('drop', this.preventDefault);
+  },
+  watch: {
+    endpoint(endpoint) { this.client.reset(Object.assign(this.options, { endpoint })); },
   },
 };
 </script>
