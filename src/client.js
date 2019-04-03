@@ -7,50 +7,44 @@ function isFolder(file) { return file.type && file.size % 4096 !== 0; }
 
 function hasFiles(files) { return Object.keys(files).length > 0; }
 
-function createUppyClient(vm) {
+function createUppyClient(vm, options = {}) {
   if (!vm) { throw new Error('No vue instance is provided'); }
 
   const store = new VueStore(vm);
-  return Uppy({
+  return Uppy(Object.assign({
     store,
     onBeforeFileAdded: isFolder,
     onBeforeUpload: hasFiles,
-  });
+  }, options));
 }
 
 const MODE_MAPPING = {
   TUS: {
     uploader: Tus,
     options: {
-      headers: {
-        Accept: 'application/json',
-      },
+      headers: { Accept: 'application/json' },
       limit: 1,
       resume: false,
     },
   },
-  XHR: {
-    uploader: XHR,
-    options: {},
-  },
+  XHR: { uploader: XHR },
 };
 
 const client = {
-  installPlugin(options = {}) {
-    const mode = options.mode || 'TUS';
+  installPlugin(options = {}, mode = 'TUS') {
     this.uppy.use(
       MODE_MAPPING[mode].uploader,
-      Object.assign(MODE_MAPPING[mode].options, options),
+      Object.assign(MODE_MAPPING[mode].options || {}, options),
     );
   },
   init(vm, options = {}) {
-    this.uppy = createUppyClient(vm);
-    this.installPlugin(options);
+    this.uppy = createUppyClient(vm, options.uppy);
+    this.installPlugin(options.uploader, options.mode);
   },
   reset(options = {}) {
     if (this.uppy) {
       this.uppy.close();
-      this.installPlugin(options);
+      this.installPlugin(options, options.mode);
     }
   },
   async upload(files = []) {
