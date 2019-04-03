@@ -4,14 +4,31 @@
         id="dropzone"
         @entered="msg = 'Entered!'"
         @left="msg = 'Left!'"
-        @dropped="drop()">
-      <v-layout align-center justify-center>
+        @dropped="drop()"
+        v-model="files"
+        :endpoint="endpoint">
+      <v-layout wrap align-center justify-center>
+        <v-flex xs12>
+          <v-text-field v-model="endpoint" label="Endpoint" />
+        </v-flex>
         <v-flex
             d-flex
             align-center
             justify-center
             id="dropzone-slot">
           {{ msg }}
+        </v-flex>
+        <v-flex xs12>
+          <v-list>
+            <v-list-tile :key="file.id" v-for="file in files">
+              <v-list-tile-action>
+                <v-progress-circular :value="file.progress.percentage" />
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>{{ file.name }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
         </v-flex>
       </v-layout>
     </DropZone>
@@ -27,6 +44,8 @@ export default {
   data() {
     return {
       msg: 'Drop Here!',
+      files: [],
+      endpoint: 'https://master.tus.io/files/',
     };
   },
   methods: {

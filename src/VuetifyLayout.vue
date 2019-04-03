@@ -1,7 +1,7 @@
 <template>
   <v-app>
       <v-content>
-        <v-container>
+        <v-container grid-list-lg>
           <slot />
         </v-container>
       </v-content>
