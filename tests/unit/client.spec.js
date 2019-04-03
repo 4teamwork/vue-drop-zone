@@ -96,4 +96,15 @@ describe('client', () => {
       });
     assertFiles(client, []);
   });
+
+  test('supports tus and xhr upload', () => {
+    // Default is tus
+    client.init(new Vue());
+    expect(client.uppy.plugins.uploader.map(u => u.title))
+      .toEqual(['Tus']);
+
+    client.init(new Vue(), { mode: 'XHR' });
+    expect(client.uppy.plugins.uploader.map(u => u.title))
+      .toEqual(['XHRUpload']);
+  });
 });

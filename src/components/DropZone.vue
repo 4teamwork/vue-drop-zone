@@ -26,6 +26,10 @@ export default {
       type: String,
       default: () => document.URL,
     },
+    mode: {
+      type: String,
+      default: () => 'TUS',
+    },
     options: {
       type: Object,
       default: () => ({}),
@@ -68,6 +72,7 @@ export default {
   },
   watch: {
     endpoint(endpoint) { this.client.reset(Object.assign(this.options, { endpoint })); },
+    mode(mode) { this.client.reset(Object.assign(this.options, { mode })); },
   },
 };
 </script>

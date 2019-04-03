@@ -102,4 +102,13 @@ describe('DropZone', () => {
     assertUppyFiles(w, ['file1']);
     expect(client.uppy.getState().files).toEqual({});
   });
+
+  test('run the drop zone in XHR mode', async () => {
+    expect(w.emittedByOrder().length).toBe(2);
+    w.setProps({ mode: 'XHR' });
+
+    await w.vm.$nextTick();
+    expect(client.uppy.plugins.uploader.map(u => u.title))
+      .toEqual(['XHRUpload']);
+  });
 });

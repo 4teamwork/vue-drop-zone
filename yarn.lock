@@ -779,6 +779,15 @@
   dependencies:
     lodash.throttle "^4.1.1"
 
+"@uppy/xhr-upload@^0.30.3":
+  version "0.30.3"
+  resolved "https://registry.yarnpkg.com/@uppy/xhr-upload/-/xhr-upload-0.30.3.tgz#21340ef713ae7cb3930e3f778412a931817699c7"
+  integrity sha512-LBC5L8lWsm9KJ2/1AbB7khBc++vCkvUKi5BbBvRTIQ13g4vJ1Tp1oiQQY/sPubDTx5IKvh6w/lN30edzcNHFXA==
+  dependencies:
+    "@uppy/companion-client" "0.28.3"
+    "@uppy/utils" "0.30.3"
+    cuid "^2.1.1"
+
 "@vue/babel-helper-vue-jsx-merge-props@^1.0.0-beta.3":
   version "1.0.0-beta.3"
   resolved "https://registry.yarnpkg.com/@vue/babel-helper-vue-jsx-merge-props/-/babel-helper-vue-jsx-merge-props-1.0.0-beta.3.tgz#e4c2e7125b3e0d2a9d493e457850b2abb0fd3cad"
