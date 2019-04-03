@@ -19,11 +19,11 @@ describe('DropZone', () => {
     w = await localMount(DropZone);
   });
 
-  test('Component renders', async () => {
+  test('Component renders', () => {
     expect(w.exists()).toBe(true);
   });
 
-  test('activates and deactivates on drag events', async () => {
+  test('activates and deactivates on drag events', () => {
     w.trigger('dragenter');
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },

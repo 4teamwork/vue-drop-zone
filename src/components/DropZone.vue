@@ -29,6 +29,7 @@ export default {
     mode: {
       type: String,
       default: () => 'TUS',
+      validator: m => ['TUS', 'XHR'].includes(m),
     },
     options: {
       type: Object,
