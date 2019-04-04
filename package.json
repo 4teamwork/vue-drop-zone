@@ -3,7 +3,7 @@
   "description": "A vue component for drag'n'drop upload using uppy.io",
   "version": "0.1.0",
   "private": false,
-  "main": "./dist/vue-drop-zone.common.js",
+  "main": "./dist/drop-zone.common.js",
   "license": "GPL-2.0",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
   },
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib --name drop-zone src/components/DropZone.vue",
+    "build": "vue-cli-service build --target lib --name drop-zone src/index.js",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit",
     "preversion": "yarn run lint && yarn run test:unit && yarn run build",
