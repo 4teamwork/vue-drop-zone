@@ -21,6 +21,7 @@
   "dependencies": {
     "@uppy/core": "^0.30.3",
     "@uppy/tus": "^0.30.3",
+    "@uppy/xhr-upload": "^0.30.3",
     "lodash": "^4.17.11",
     "material-design-icons-iconfont": "^4.0.3",
     "remove": "^0.1.5",

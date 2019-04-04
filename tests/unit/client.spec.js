@@ -29,7 +29,7 @@ describe('client', () => {
       .not.toBeUndefined();
   });
 
-  test('accepts options for tus plugin', () => {
+  test('accepts uploader options', () => {
     client.init(new Vue());
     expect(client.uppy.getPlugin('Tus').opts)
       .toEqual({
@@ -41,7 +41,7 @@ describe('client', () => {
         headers: { Accept: 'application/json' },
       });
 
-    client.init(new Vue(), { resume: true });
+    client.init(new Vue(), { uploader: { resume: true } });
     expect(client.uppy.getPlugin('Tus').opts)
       .toEqual({
         resume: true,
@@ -51,6 +51,14 @@ describe('client', () => {
         retryDelays: [0, 1000, 3000, 5000],
         headers: { Accept: 'application/json' },
       });
+  });
+
+  test('accepts uppy options', () => {
+    client.init(new Vue());
+    expect(client.uppy.opts.meta).toEqual({});
+
+    client.init(new Vue(), { uppy: { meta: { some: 'meta' } } });
+    expect(client.uppy.opts.meta).toEqual({ some: 'meta' });
   });
 
   test('adding a file throws when uppy is not initialized', () => {
@@ -71,7 +79,7 @@ describe('client', () => {
   });
 
   test('resets uppy client', () => {
-    client.init(new Vue(), { resume: true });
+    client.init(new Vue(), { uploader: { resume: true } });
     client.addFile({ name: 'file', type: 'image/png', data: '' });
     assertFiles(client, ['file']);
     expect(client.uppy.getPlugin('Tus').opts)
@@ -95,5 +103,16 @@ describe('client', () => {
         headers: { Accept: 'application/json' },
       });
     assertFiles(client, []);
+  });
+
+  test('supports tus and xhr upload', () => {
+    // Default is tus
+    client.init(new Vue());
+    expect(client.uppy.plugins.uploader.map(u => u.title))
+      .toEqual(['Tus']);
+
+    client.reset({ mode: 'XHR' });
+    expect(client.uppy.plugins.uploader.map(u => u.title))
+      .toEqual(['XHRUpload']);
   });
 });

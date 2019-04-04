@@ -19,11 +19,11 @@ describe('DropZone', () => {
     w = await localMount(DropZone);
   });
 
-  test('Component renders', async () => {
+  test('Component renders', () => {
     expect(w.exists()).toBe(true);
   });
 
-  test('activates and deactivates on drag events', async () => {
+  test('activates and deactivates on drag events', () => {
     w.trigger('dragenter');
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
@@ -101,5 +101,14 @@ describe('DropZone', () => {
     // This event is still here when the file was added
     assertUppyFiles(w, ['file1']);
     expect(client.uppy.getState().files).toEqual({});
+  });
+
+  test('run the drop zone in XHR mode', async () => {
+    expect(w.emittedByOrder().length).toBe(2);
+    w.setProps({ mode: 'XHR' });
+
+    await w.vm.$nextTick();
+    expect(client.uppy.plugins.uploader.map(u => u.title))
+      .toEqual(['XHRUpload']);
   });
 });
