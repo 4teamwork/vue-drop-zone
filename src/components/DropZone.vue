@@ -51,6 +51,7 @@ export default {
       }
     },
     handleDrop({ dataTransfer: { files } }) {
+      this.dragCount = 0;
       this.$emit('dropped');
       this.client.upload(Array.from(files));
     },

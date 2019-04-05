@@ -75,6 +75,18 @@ describe('DropZone', () => {
       { args: [], name: 'entered' },
       { args: [], name: 'dropped' },
     ]);
+
+    // Check that entered event is fired after drop
+    w.trigger('dragenter');
+    expect(w.emittedByOrder()).toEqual([
+      { args: [[]], name: 'input' },
+      { args: [[]], name: 'input' },
+      { args: [], name: 'entered' },
+      { args: [], name: 'left' },
+      { args: [], name: 'entered' },
+      { args: [], name: 'dropped' },
+      { args: [], name: 'entered' },
+    ]);
   });
 
   test('emits input events for every store change', async () => {
