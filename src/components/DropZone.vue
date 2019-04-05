@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import merge from 'lodash/merge';
 import client from '../client';
 
 export default {
@@ -65,15 +66,19 @@ export default {
     window.addEventListener('dragover', this.preventDefault);
     window.addEventListener('drop', this.preventDefault);
 
-    this.client.init(this, Object.assign(this.options, { endpoint: this.endpoint }));
+    const options = merge(
+      this.options,
+      { uploader: { endpoint: this.endpoint }, mode: this.mode },
+    );
+    this.client.init(this, options);
   },
   destroyed() {
     window.removeEventListener('dragover', this.preventDefault);
     window.removeEventListener('drop', this.preventDefault);
   },
   watch: {
-    endpoint(endpoint) { this.client.reset(Object.assign(this.options, { endpoint })); },
-    mode(mode) { this.client.reset(Object.assign(this.options, { mode })); },
+    endpoint(endpoint) { this.client.reset(merge(this.options, { uploader: { endpoint } })); },
+    mode(mode) { this.client.reset(merge(this.options, { mode })); },
   },
 };
 </script>
