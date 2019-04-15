@@ -111,6 +111,30 @@ describe('DropZone', () => {
     assertUppyFiles(w, ['file1', 'file1', 'file2']);
   });
 
+  test('do not upload files for files not passing the validator', async () => {
+    let invalidFiles = [];
+
+    // Only allow `xlsx` files to upload
+    w.setProps({
+      fileUploadValidator: file => file.type === 'xlsx',
+      handleInvalidFiles: (files) => { invalidFiles = files; },
+    });
+
+    await w.vm.$nextTick();
+
+    assertUppyFiles(w, []);
+
+    const file1 = { name: 'file1', data: '', type: 'docx' };
+    const file2 = { name: 'file2', data: '', type: 'xlsx' };
+    const file3 = { name: 'file3', data: '', type: 'xlsx' };
+    const file4 = { name: 'file4', data: '', type: 'pdf' };
+
+    w.trigger('drop', { dataTransfer: { files: [file1, file2, file3, file4] } });
+
+    assertUppyFiles(w, ['file2', 'file2', 'file3']);
+    expect(invalidFiles).toEqual([file1, file4]);
+  });
+
   test('control the drop zone with the client', () => {
     client.uppy.addFile({ name: 'file1', data: '' });
     expect(w.emittedByOrder().length).toBe(3);

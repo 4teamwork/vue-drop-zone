@@ -40,6 +40,14 @@ export default {
       type: Boolean,
       default: true,
     },
+    fileUploadValidator: {
+      type: Function,
+      default: () => true,
+    },
+    handleInvalidFiles: {
+      type: Function,
+      default: () => {},
+    },
   },
   methods: {
     handleDragEnter() {
@@ -62,7 +70,19 @@ export default {
         return;
       }
 
-      this.client.upload(Array.from(files));
+      const validFiles = [];
+      const invalidFiles = [];
+
+      Array.from(files).forEach((file) => {
+        if (this.fileUploadValidator(file)) {
+          validFiles.push(file);
+        } else {
+          invalidFiles.push(file);
+        }
+      });
+
+      this.handleInvalidFiles(invalidFiles);
+      this.client.upload(validFiles);
     },
     preventDefault(e) { e.preventDefault(); },
   },
