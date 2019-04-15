@@ -89,6 +89,14 @@ describe('DropZone', () => {
     ]);
   });
 
+  test('do not upload files if enableUpload is false', async () => {
+    w.setProps({ enableUpload: false });
+    await w.vm.$nextTick();
+
+    w.trigger('drop', { dataTransfer: { files: [] } });
+    assertUppyFiles(w, []);
+  });
+
   test('emits input events for every store change', async () => {
     assertUppyFiles(w, []);
 

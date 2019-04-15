@@ -36,6 +36,10 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    enableUpload: {
+      type: Boolean,
+      default: true,
+    },
   },
   methods: {
     handleDragEnter() {
@@ -53,6 +57,11 @@ export default {
     handleDrop({ dataTransfer: { files } }) {
       this.dragCount = 0;
       this.$emit('dropped');
+
+      if (!this.enableUpload) {
+        return;
+      }
+
       this.client.upload(Array.from(files));
     },
     preventDefault(e) { e.preventDefault(); },
