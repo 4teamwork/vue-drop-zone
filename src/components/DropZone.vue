@@ -71,7 +71,8 @@ export default {
       this.options,
       { uploader: { endpoint: this.endpoint }, mode: this.mode },
     );
-    this.client.init(this, options);
+    this.client.uppy.on('upload-error', file => this.$emit('error', file));
+    this.client.uppy.on('upload-success', () => this.$emit('success'));
   },
   destroyed() {
     window.removeEventListener('dragover', this.preventDefault);
