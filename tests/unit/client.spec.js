@@ -1,4 +1,4 @@
-import client from '@/client';
+import Client from '@/client';
 import Vue from 'vue';
 
 function assertFiles(c, expected) {
@@ -8,18 +8,14 @@ function assertFiles(c, expected) {
 }
 
 describe('client', () => {
-  afterEach(() => {
-    client.reset();
-    delete client.uppy;
-  });
-
   test('throws error when no vm is provided', () => {
-    expect(() => { client.init(); })
+    // eslint-disable-next-line no-new
+    expect(() => { new Client(); })
       .toThrowError(new Error('No vue instance is provided'));
   });
 
   test('initializes uppy client', () => {
-    client.init(new Vue());
+    const client = new Client(new Vue());
     expect(client.uppy).not.toBeUndefined();
 
     // Installs tus plugin
@@ -30,7 +26,7 @@ describe('client', () => {
   });
 
   test('accepts uploader options', () => {
-    client.init(new Vue());
+    const client = new Client(new Vue());
     expect(client.uppy.getPlugin('Tus').opts)
       .toEqual({
         resume: false,
@@ -41,8 +37,8 @@ describe('client', () => {
         headers: { Accept: 'application/json' },
       });
 
-    client.init(new Vue(), { uploader: { resume: true } });
-    expect(client.uppy.getPlugin('Tus').opts)
+    const clientWithOptions = new Client(new Vue(), { uploader: { resume: true } });
+    expect(clientWithOptions.uppy.getPlugin('Tus').opts)
       .toEqual({
         resume: true,
         autoRetry: true,
@@ -54,32 +50,21 @@ describe('client', () => {
   });
 
   test('accepts uppy options', () => {
-    client.init(new Vue());
+    const client = new Client(new Vue());
     expect(client.uppy.opts.meta).toEqual({});
 
-    client.init(new Vue(), { uppy: { meta: { some: 'meta' } } });
-    expect(client.uppy.opts.meta).toEqual({ some: 'meta' });
-  });
-
-  test('adding a file throws when uppy is not initialized', () => {
-    expect(() => { client.addFile(); })
-      .toThrowError(new Error('Client has not been initialized'));
+    const clientWithMeta = new Client(new Vue(), { uppy: { meta: { some: 'meta' } } });
+    expect(clientWithMeta.uppy.opts.meta).toEqual({ some: 'meta' });
   });
 
   test('adds files to the store', () => {
-    client.init(new Vue());
+    const client = new Client(new Vue());
     client.addFile({ name: 'file', type: 'image/png', data: '' });
     assertFiles(client, ['file']);
   });
 
-  test('upload throws error when client is not initialized', () => {
-    expect(client.upload())
-      .rejects
-      .toEqual(new Error('Client has not been initialized'));
-  });
-
   test('resets uppy client', () => {
-    client.init(new Vue(), { uploader: { resume: true } });
+    const client = new Client(new Vue(), { uploader: { resume: true } });
     client.addFile({ name: 'file', type: 'image/png', data: '' });
     assertFiles(client, ['file']);
     expect(client.uppy.getPlugin('Tus').opts)
@@ -107,7 +92,7 @@ describe('client', () => {
 
   test('supports tus and xhr upload', () => {
     // Default is tus
-    client.init(new Vue());
+    const client = new Client(new Vue());
     expect(client.uppy.plugins.uploader.map(u => u.title))
       .toEqual(['Tus']);
 

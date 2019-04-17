@@ -48,13 +48,15 @@ import { DropZone } from '@4tw/vue-drop-zone'
 
 ### Uppy Client
 
-The client is a singleton and can be imported from the library:
+The client sits on every drop-zone instance and can be retrieved using a ref:
+
+``` html
+<DropZone ref="dropzone" />
+```
 
 ``` javascript
-import { client } from '@4tw/vue-drop-zone'
-
-client.uppy.pauseAll();
-client.uppy.retryAll();
+this.$refs.dropzone.client.uppy.pauseAll();
+this.$refs.dropzone.client.uppy.retryAll();
 ```
 
 See https://uppy.io/docs/uppy/#Methods for all the available methods.
