@@ -30,32 +30,32 @@ const MODE_MAPPING = {
   XHR: { uploader: XHR },
 };
 
-const client = {
+export default class Client {
+  constructor(vm, options = {}) {
+    this.uppy = createUppyClient(vm, options.uppy);
+    this.installPlugin(options.uploader, options.mode);
+  }
+
   installPlugin(options = {}, mode = 'TUS') {
     this.uppy.use(
       MODE_MAPPING[mode].uploader,
       Object.assign(MODE_MAPPING[mode].options || {}, options),
     );
-  },
-  init(vm, options = {}) {
-    this.uppy = createUppyClient(vm, options.uppy);
-    this.installPlugin(options.uploader, options.mode);
-  },
+  }
+
   reset(options = {}) {
     if (this.uppy) {
       this.uppy.close();
       this.installPlugin(options, options.mode);
     }
-  },
+  }
+
   async upload(files = []) {
-    if (!this.uppy) { throw new Error('Client has not been initialized'); }
     files.forEach(f => this.addFile(f));
     return this.uppy.upload();
-  },
-  addFile(file) {
-    if (!this.uppy) { throw new Error('Client has not been initialized'); }
-    this.uppy.addFile({ name: file.name, type: file.type, data: file });
-  },
-};
+  }
 
-export default client;
+  addFile(file) {
+    this.uppy.addFile({ name: file.name, type: file.type, data: file });
+  }
+}

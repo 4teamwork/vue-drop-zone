@@ -1,5 +1,4 @@
 import DropZone from '@/components/DropZone.vue';
-import client from '@/client';
 import { localMount } from './support';
 import { flatMap } from 'lodash';
 
@@ -65,14 +64,47 @@ describe('DropZone', () => {
       { args: [], name: 'entered' },
     ]);
 
+    w.vm.client.addFile({ name: 'file1', data: '' });
+
     // Check the drop event
     w.trigger('drop', { dataTransfer: { files: [] } });
+
+    const inputEvent = [
+      {
+        data: {
+          data: '',
+          name: 'file1',
+        },
+        extension: '',
+        id: 'uppy-file1',
+        isRemote: false,
+        meta: {
+          name: 'file1',
+          type: 'application/octet-stream',
+        },
+        name: 'file1',
+        preview: undefined,
+        progress: {
+          bytesTotal: 0,
+          bytesUploaded: 0,
+          percentage: 0,
+          uploadComplete: false,
+          uploadStarted: false,
+        },
+        remote: '',
+        size: 0,
+        source: '',
+        type: 'application/octet-stream',
+      },
+    ];
+
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
       { args: [], name: 'entered' },
       { args: [], name: 'left' },
       { args: [], name: 'entered' },
+      { args: [inputEvent], name: 'input' },
       { args: [], name: 'dropped' },
     ]);
 
@@ -84,6 +116,7 @@ describe('DropZone', () => {
       { args: [], name: 'entered' },
       { args: [], name: 'left' },
       { args: [], name: 'entered' },
+      { args: [inputEvent], name: 'input' },
       { args: [], name: 'dropped' },
       { args: [], name: 'entered' },
     ]);
@@ -92,27 +125,27 @@ describe('DropZone', () => {
   test('emits input events for every store change', async () => {
     assertUppyFiles(w, []);
 
-    w.vm.client.uppy.addFile({ name: 'file1', data: '' });
+    w.vm.client.addFile({ name: 'file1', data: '' });
     expect(w.emittedByOrder().length).toBe(3);
     expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'input']);
     assertUppyFiles(w, ['file1']);
 
-    w.vm.client.uppy.addFile({ name: 'file2', data: '' });
+    w.vm.client.addFile({ name: 'file2', data: '' });
     expect(w.emittedByOrder().length).toBe(4);
     expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'input', 'input']);
     assertUppyFiles(w, ['file1', 'file1', 'file2']);
   });
 
   test('control the drop zone with the client', () => {
-    client.uppy.addFile({ name: 'file1', data: '' });
+    w.vm.client.addFile({ name: 'file1', data: '' });
     expect(w.emittedByOrder().length).toBe(3);
     expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'input']);
     assertUppyFiles(w, ['file1']);
 
-    client.uppy.reset();
+    w.vm.client.reset();
     // This event is still here when the file was added
     assertUppyFiles(w, ['file1']);
-    expect(client.uppy.getState().files).toEqual({});
+    expect(w.vm.client.uppy.getState().files).toEqual({});
   });
 
   test('run the drop zone in XHR mode', async () => {
@@ -120,7 +153,7 @@ describe('DropZone', () => {
     w.setProps({ mode: 'XHR' });
 
     await w.vm.$nextTick();
-    expect(client.uppy.plugins.uploader.map(u => u.title))
+    expect(w.vm.client.uppy.plugins.uploader.map(u => u.title))
       .toEqual(['XHRUpload']);
   });
 });

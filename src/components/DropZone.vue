@@ -8,14 +8,16 @@
 
 <script>
 import merge from 'lodash/merge';
-import client from '../client';
+import Client from '../client';
+
+const UPLOAD_MODES = ['TUS', 'XHR'];
 
 export default {
   name: 'DropZone',
   data() {
     return {
       dragCount: 0,
-      client,
+      client: null,
     };
   },
   props: {
@@ -30,7 +32,7 @@ export default {
     mode: {
       type: String,
       default: () => 'TUS',
-      validator: m => ['TUS', 'XHR'].includes(m),
+      validator: m => UPLOAD_MODES.includes(m),
     },
     options: {
       type: Object,
@@ -50,10 +52,10 @@ export default {
         this.$emit('left');
       }
     },
-    handleDrop({ dataTransfer: { files } }) {
+    async handleDrop({ dataTransfer: { files } }) {
       this.dragCount = 0;
       this.$emit('dropped');
-      this.client.upload(Array.from(files));
+      await this.client.upload(Array.from(files));
     },
     preventDefault(e) { e.preventDefault(); },
   },
@@ -71,7 +73,9 @@ export default {
       this.options,
       { uploader: { endpoint: this.endpoint }, mode: this.mode },
     );
-    this.client.init(this, options);
+    this.client = new Client(this, options);
+    this.client.uppy.on('upload-error', file => this.$emit('error', file));
+    this.client.uppy.on('upload-success', () => this.$emit('success'));
   },
   destroyed() {
     window.removeEventListener('dragover', this.preventDefault);

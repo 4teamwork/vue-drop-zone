@@ -48,13 +48,15 @@ import { DropZone } from '@4tw/vue-drop-zone'
 
 ### Uppy Client
 
-The client is a singleton and can be imported from the library:
+The client sits on every drop-zone instance and can be retrieved using a ref:
+
+``` html
+<DropZone ref="dropzone" />
+```
 
 ``` javascript
-import { client } from '@4tw/vue-drop-zone'
-
-client.uppy.pauseAll();
-client.uppy.retryAll();
+this.$refs.dropzone.client.uppy.pauseAll();
+this.$refs.dropzone.client.uppy.retryAll();
 ```
 
 See https://uppy.io/docs/uppy/#Methods for all the available methods.
@@ -67,6 +69,9 @@ by the client itself.
 - entered: Triggers when the mouse pointer enters the dropping area
 - left: Triggers when the mouse poiter has left the dropping area
 - dropped: Triggers when the files are dropped
+- success: Triggers when the upload successfully finished
+- error(File file): Triggers when the upload fails. Also provides the file
+that failed the first as an event argument.
 
 ## Development
 ```
