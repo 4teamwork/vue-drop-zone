@@ -41,10 +41,12 @@ import { DropZone } from '@4tw/vue-drop-zone'
 
 ### Properties
 
-- endpoint[String]: Describes the endpoint where the dropzone should upload the files to
-- mode[String]: Describes the uploader to be used. Can either be 'TUS' or 'XHR'.
-- options[Object]: The object can contain of two keys. `uppy` for the uppy client options (https://uppy.io/docs/uppy/#Options), `uploader` for the uploader options (XHR: https://uppy.io/docs/xhr-upload/#Options), (https://uppy.io/docs/tus/#Options)
-- v-model[Array]: Use the v-model to have a list of uppy files in the current state (https://uppy.io/docs/uppy/#uppy-getFile-fileID)
+- endpoint[String:document.URL]: Describes the endpoint where the dropzone should upload the files to
+- mode[String:'TUS']: Describes the uploader to be used. Can either be 'TUS' or 'XHR'.
+- options[Object:{}]: The object can contain of two keys. `uppy` for the uppy client options (https://uppy.io/docs/uppy/#Options), `uploader` for the uploader options (XHR: https://uppy.io/docs/xhr-upload/#Options), (https://uppy.io/docs/tus/#Options)
+- v-model[Array:[]]: Use the v-model to have a list of uppy files in the current state (https://uppy.io/docs/uppy/#uppy-getFile-fileID)
+- file-browser[Boolean:false]: Define if the dropzone should also be clickable to allow the user
+to select the files using the native file browser.
 
 ### Uppy Client
 
