@@ -1,9 +1,17 @@
 <template>
-  <div
+  <label
       @dragenter="handleDragEnter"
       @dragleave="handleDragLeave"
       @drop="handleDrop"
-  ><slot /></div>
+  >
+    <input
+        v-if="fileBrowser"
+        @change="handleFileInput"
+        multiple
+        type="file"
+        style="display: none;" />
+    <slot />
+  </label>
 </template>
 
 <script>
@@ -38,6 +46,10 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    fileBrowser: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   methods: {
     handleDragEnter() {
@@ -55,6 +67,9 @@ export default {
     async handleDrop({ dataTransfer: { files } }) {
       this.dragCount = 0;
       this.$emit('dropped');
+      await this.client.upload(Array.from(files));
+    },
+    async handleFileInput({ target: { files } }) {
       await this.client.upload(Array.from(files));
     },
     preventDefault(e) { e.preventDefault(); },
