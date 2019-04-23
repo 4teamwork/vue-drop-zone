@@ -3,7 +3,20 @@ import Tus from '@uppy/tus';
 import XHR from '@uppy/xhr-upload';
 import VueStore from './vuestore';
 
-function isFolder(file) { return file.type && file.size % 4096 !== 0; }
+function isFile(file) {
+  const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    reader.onerror = () => {
+      reader.abort();
+      reject(new Error('No folders allowed'));
+    };
+    reader.onload = () => {
+      resolve(true);
+    };
+
+    reader.readAsBinaryString(file);
+  });
+}
 
 function hasFiles(files) { return Object.keys(files).length > 0; }
 
@@ -13,7 +26,6 @@ function createUppyClient(vm, options = {}) {
   const store = new VueStore(vm);
   return Uppy(Object.assign({
     store,
-    onBeforeFileAdded: isFolder,
     onBeforeUpload: hasFiles,
   }, options));
 }
@@ -51,7 +63,8 @@ export default class Client {
   }
 
   async upload(files = []) {
-    files.forEach(f => this.addFile(f));
+    const results = await Promise.all(files.map(f => isFile(f)));
+    if (results.every(f => f === true)) { files.forEach(f => this.addFile(f)); }
     return this.uppy.upload();
   }
 
