@@ -64,13 +64,20 @@ export default {
         this.$emit('left');
       }
     },
-    async handleDrop({ dataTransfer: { files } }) {
+    handleDrop({ dataTransfer: { files } }) {
       this.dragCount = 0;
       this.$emit('dropped');
-      await this.client.upload(Array.from(files));
+      this.handleUpload(files);
     },
-    async handleFileInput({ target: { files } }) {
-      await this.client.upload(Array.from(files));
+    handleFileInput({ target: { files } }) {
+      this.handleUpload(files);
+    },
+    async handleUpload(files) {
+      try {
+        await this.client.upload(Array.from(files));
+      } catch (error) {
+        this.$emit('error', error);
+      }
     },
     preventDefault(e) { e.preventDefault(); },
   },
