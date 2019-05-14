@@ -54,6 +54,10 @@ export default {
       type: Boolean,
       default: () => false,
     },
+    precondition: {
+      type: Function,
+      default: () => true,
+    },
   },
   methods: {
     handleDragEnter() {
@@ -78,7 +82,13 @@ export default {
     },
     async handleUpload(files) {
       try {
-        await this.client.upload(Array.from(files));
+        if (await this.precondition()) {
+          await this.client.upload(Array.from(files));
+        } else {
+          const error = new Error('Upload canceled because precondition check failed');
+          error.name = 'PreconditionFailure';
+          throw error;
+        }
       } catch (error) {
         this.$emit('error', error);
       }
