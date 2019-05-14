@@ -3,9 +3,11 @@
       @dragenter="handleDragEnter"
       @dragleave="handleDragLeave"
       @drop="handleDrop"
+      :for="uuid"
   >
     <input
         v-if="fileBrowser"
+        :id="uuid"
         @change="handleFileInput"
         multiple
         type="file"
@@ -15,6 +17,7 @@
 </template>
 
 <script>
+import uuidv4 from 'uuid/v4';
 import merge from 'lodash/merge';
 import Client from '../client';
 
@@ -26,6 +29,7 @@ export default {
     return {
       dragCount: 0,
       client: null,
+      uuid: uuidv4(),
     };
   },
   props: {
