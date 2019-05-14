@@ -1,6 +1,7 @@
 import DropZone from '@/components/DropZone.vue';
 import { localMount } from './support';
 import { flatMap } from 'lodash';
+import uuidv4 from 'uuid/v4';
 
 function assertUppyFiles(w, expected) {
   expect(
@@ -155,5 +156,11 @@ describe('DropZone', () => {
     await w.vm.$nextTick();
     expect(w.vm.client.uppy.plugins.uploader.map(u => u.title))
       .toEqual(['XHRUpload']);
+  });
+
+  test('adds unique ids to label and input elements', async () => {
+    w = await localMount(DropZone, { propsData: { fileBrowser: true } });
+    expect(w.find('label').attributes('for')).toBe('268d77d2-420b-4be9-a814-d5063fe76fb6');
+    expect(w.find('input').attributes('id')).toBe('268d77d2-420b-4be9-a814-d5063fe76fb6');
   });
 });

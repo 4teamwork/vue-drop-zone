@@ -28,7 +28,7 @@ The files list also includes the progess and other metadata.
 ```
 
 ``` javascript
-import { DropZone } from '@4tw/vue-drop-zone'
+import DropZone from '@4tw/vue-drop-zone'
 
 {
   name: 'MyDropZone',
