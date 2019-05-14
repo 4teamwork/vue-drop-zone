@@ -1,7 +1,6 @@
 import DropZone from '@/components/DropZone.vue';
 import { localMount } from './support';
 import { flatMap } from 'lodash';
-import uuidv4 from 'uuid/v4';
 
 function assertUppyFiles(w, expected) {
   expect(
