@@ -8,7 +8,9 @@ function isFile(file) {
   return new Promise((resolve, reject) => {
     reader.onerror = () => {
       reader.abort();
-      reject(new Error('No folders allowed'));
+      const error = new Error('Upload canceled because folders cannot be uploaded');
+      error.name = 'FoldersNotAllowedError';
+      reject(error);
     };
     reader.onload = () => {
       resolve(true);
@@ -58,7 +60,7 @@ export default class Client {
   reset(options = {}) {
     if (this.uppy) {
       this.uppy.close();
-      this.installPlugin(options, options.mode);
+      this.installPlugin(options.uploader, options.mode);
     }
   }
 
