@@ -9,7 +9,9 @@ function isFile(file) {
   return new Promise((resolve, reject) => {
     reader.onerror = () => {
       reader.abort();
-      reject(new Error('No folders allowed'));
+      const error = new Error('Upload canceled because folders cannot be uploaded');
+      error.name = 'FoldersNotAllowedError';
+      reject(error);
     };
     reader.onload = () => {
       resolve(true);
