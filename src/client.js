@@ -55,6 +55,10 @@ export default class Client {
     );
   }
 
+  updateEndpoint(endpoint, { mode = 'TUS' } = {}) {
+    this.uppy.getPlugin(MODE_MAPPING[mode].uploader.name).opts.endpoint = endpoint;
+  }
+
   reset(options = {}) {
     if (this.uppy) {
       this.uppy.close();
