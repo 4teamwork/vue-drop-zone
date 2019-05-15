@@ -63,7 +63,7 @@ export default class Client {
   reset(options = {}) {
     if (this.uppy) {
       this.uppy.close();
-      this.installPlugin(options, options.mode);
+      this.installPlugin(options.uploader, options.mode);
     }
   }
 
