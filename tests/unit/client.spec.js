@@ -100,4 +100,12 @@ describe('client', () => {
     expect(client.uppy.plugins.uploader.map(u => u.title))
       .toEqual(['XHRUpload']);
   });
+
+  test('changes endpoint', () => {
+    const client = new Client(new Vue(), { uploader: { endpoint: 'path1' } });
+    expect(client.uppy.getPlugin('Tus').opts.endpoint).toBe('path1');
+
+    client.updateEndpoint('path2');
+    expect(client.uppy.getPlugin('Tus').opts.endpoint).toBe('path2');
+  });
 });

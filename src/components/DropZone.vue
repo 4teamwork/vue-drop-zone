@@ -108,7 +108,7 @@ export default {
     window.removeEventListener('drop', this.preventDefault);
   },
   watch: {
-    endpoint(endpoint) { this.client.reset(merge(this.options, { uploader: { endpoint } })); },
+    endpoint(endpoint) { this.client.updateEndpoint(endpoint, this.options); },
     mode(mode) { this.client.reset(merge(this.options, { mode })); },
   },
 };
