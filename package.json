@@ -1,7 +1,7 @@
 {
   "name": "@4tw/vue-drop-zone",
   "description": "A vue component for drag'n'drop upload using uppy.io",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "private": false,
   "main": "./dist/drop-zone.common.js",
   "license": "GPL-2.0",
