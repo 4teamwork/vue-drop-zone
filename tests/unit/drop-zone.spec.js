@@ -1,5 +1,5 @@
 import DropZone from '@/components/DropZone.vue';
-import { localMount } from './support';
+import { localMount, freezeTime } from './support';
 import { flatMap } from 'lodash';
 
 function assertUppyFiles(w, expected) {
@@ -13,9 +13,11 @@ function assertUppyFiles(w, expected) {
 
 describe('DropZone', () => {
   let w;
+  let now;
 
   beforeEach(async () => {
     w = await localMount(DropZone);
+    now = freezeTime();
   });
 
   test('Component renders', () => {
@@ -64,23 +66,21 @@ describe('DropZone', () => {
       { args: [], name: 'entered' },
     ]);
 
-    w.vm.client.addFile({ name: 'file1', data: '' });
+    const file = new File([''], 'file1', { type: 'text' });
+    w.vm.client.addFile(file);
 
     // Check the drop event
     w.trigger('drop', { dataTransfer: { files: [] } });
 
     const inputEvent = [
       {
-        data: {
-          data: '',
-          name: 'file1',
-        },
+        data: file,
         extension: '',
-        id: 'uppy-file1',
+        id: `uppy-file1-text-${now}`,
         isRemote: false,
         meta: {
           name: 'file1',
-          type: 'application/octet-stream',
+          type: 'text',
         },
         name: 'file1',
         preview: undefined,
@@ -94,7 +94,7 @@ describe('DropZone', () => {
         remote: '',
         size: 0,
         source: '',
-        type: 'application/octet-stream',
+        type: 'text',
       },
     ];
 

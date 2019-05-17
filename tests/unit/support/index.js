@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import MockDate from 'mockdate';
 import { mount, shallowMount } from '@vue/test-utils';
 
 function createAppContainer() {
@@ -43,4 +44,10 @@ export async function localShallow(component, options = {}) {
   });
   await Vue.nextTick();
   return wrapper;
+}
+
+export function freezeTime() {
+  const now = new Date().getTime();
+  MockDate.set(now);
+  return now;
 }

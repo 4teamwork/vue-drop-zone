@@ -2,13 +2,16 @@ import Uppy from '@uppy/core';
 import Tus from '@uppy/tus';
 import XHR from '@uppy/xhr-upload';
 import VueStore from './vuestore';
+import { updateLastModified } from './utils';
 
 function isFile(file) {
   const reader = new FileReader();
   return new Promise((resolve, reject) => {
     reader.onerror = () => {
       reader.abort();
-      reject(new Error('No folders allowed'));
+      const error = new Error('Upload canceled because folders cannot be uploaded');
+      error.name = 'FoldersNotAllowedError';
+      reject(error);
     };
     reader.onload = () => {
       resolve(true);
@@ -62,7 +65,7 @@ export default class Client {
   reset(options = {}) {
     if (this.uppy) {
       this.uppy.close();
-      this.installPlugin(options, options.mode);
+      this.installPlugin(options.uploader, options.mode);
     }
   }
 
@@ -73,6 +76,6 @@ export default class Client {
   }
 
   addFile(file) {
-    this.uppy.addFile({ name: file.name, type: file.type, data: file });
+    this.uppy.addFile({ name: file.name, type: file.type, data: updateLastModified(file) });
   }
 }
