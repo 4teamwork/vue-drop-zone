@@ -25,7 +25,7 @@ describe('DropZone', () => {
   });
 
   test('activates and deactivates on drag events', () => {
-    w.trigger('dragenter');
+    w.trigger('dragenter', { dataTransfer: { types: ['Files'] } });
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
@@ -33,14 +33,14 @@ describe('DropZone', () => {
     ]);
 
     // Check that entered is fired once
-    w.trigger('dragenter');
+    w.trigger('dragenter', { dataTransfer: { types: ['Files'] } });
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
       { args: [], name: 'entered' },
     ]);
 
-    w.trigger('dragleave');
+    w.trigger('dragleave', { dataTransfer: { types: ['Files'] } });
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
@@ -48,7 +48,16 @@ describe('DropZone', () => {
     ]);
 
     // Check that left is fired on the last element that is being left
-    w.trigger('dragleave');
+    w.trigger('dragleave', { dataTransfer: { types: ['Files'] } });
+    expect(w.emittedByOrder()).toEqual([
+      { args: [[]], name: 'input' },
+      { args: [[]], name: 'input' },
+      { args: [], name: 'entered' },
+      { args: [], name: 'left' },
+    ]);
+
+    // Check that anything other than files is ignored on dragenter
+    w.trigger('dragenter', { dataTransfer: { types: ['text/plain'] } });
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
@@ -57,7 +66,7 @@ describe('DropZone', () => {
     ]);
 
     // Check reentering the drop-zone
-    w.trigger('dragenter');
+    w.trigger('dragenter', { dataTransfer: { types: ['Files'] } });
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
@@ -70,7 +79,7 @@ describe('DropZone', () => {
     w.vm.client.addFile(file);
 
     // Check the drop event
-    w.trigger('drop', { dataTransfer: { files: [] } });
+    w.trigger('drop', { dataTransfer: { files: [], types: ['Files'] } });
 
     const inputEvent = [
       {
@@ -109,7 +118,7 @@ describe('DropZone', () => {
     ]);
 
     // Check that entered event is fired after drop
-    w.trigger('dragenter');
+    w.trigger('dragenter', { dataTransfer: { types: ['Files'] } });
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
