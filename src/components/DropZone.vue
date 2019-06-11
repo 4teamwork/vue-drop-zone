@@ -19,9 +19,7 @@
 <script>
 import uuidv4 from 'uuid/v4';
 import merge from 'lodash/merge';
-import Client from '../client';
-
-const UPLOAD_MODES = ['TUS', 'XHR'];
+import Client, { MODES, DEFAULT_MODE } from '../client';
 
 export default {
   name: 'DropZone',
@@ -43,8 +41,8 @@ export default {
     },
     mode: {
       type: String,
-      default: () => 'TUS',
-      validator: m => UPLOAD_MODES.includes(m),
+      default: () => DEFAULT_MODE,
+      validator: m => MODES.includes(m),
     },
     options: {
       type: Object,

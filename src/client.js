@@ -35,6 +35,7 @@ function createUppyClient(vm, options = {}) {
 
 const MODE_MAPPING = {
   TUS: {
+    id: 'Tus',
     uploader: Tus,
     options: {
       headers: { Accept: 'application/json' },
@@ -42,8 +43,15 @@ const MODE_MAPPING = {
       resume: false,
     },
   },
-  XHR: { uploader: XHR },
+  XHR: {
+    uploader: XHR,
+    id: 'XHRUpload',
+  },
 };
+
+export const MODES = Object.keys(MODE_MAPPING);
+
+export const DEFAULT_MODE = 'TUS';
 
 export default class Client {
   constructor(vm, options = {}) {
@@ -51,15 +59,15 @@ export default class Client {
     this.installPlugin(options.uploader, options.mode);
   }
 
-  installPlugin(options = {}, mode = 'TUS') {
+  installPlugin(options = {}, mode = DEFAULT_MODE) {
     this.uppy.use(
       MODE_MAPPING[mode].uploader,
       Object.assign(MODE_MAPPING[mode].options || {}, options),
     );
   }
 
-  updateEndpoint(endpoint, { mode = 'TUS' } = {}) {
-    this.uppy.getPlugin(MODE_MAPPING[mode].uploader.name).opts.endpoint = endpoint;
+  updateEndpoint(endpoint, { mode = DEFAULT_MODE } = {}) {
+    this.uppy.getPlugin(MODE_MAPPING[mode].id).opts.endpoint = endpoint;
   }
 
   reset(options = {}) {
