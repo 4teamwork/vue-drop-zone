@@ -56,19 +56,25 @@ export default {
     },
   },
   methods: {
-    handleDragEnter() {
+    handleDragEnter({ dataTransfer: { types } }) {
+      if (!types.includes('Files')) { return; }
+
       if (this.dragCount === 0) {
         this.$emit('entered');
       }
       this.dragCount += 1;
     },
-    handleDragLeave() {
+    handleDragLeave({ dataTransfer: { types } }) {
+      if (!types.includes('Files')) { return; }
+
       this.dragCount -= 1;
       if (this.dragCount === 0) {
         this.$emit('left');
       }
     },
-    handleDrop({ dataTransfer: { files } }) {
+    handleDrop({ dataTransfer: { files, types } }) {
+      if (!types.includes('Files')) { return; }
+
       this.dragCount = 0;
       this.$emit('dropped');
       this.handleUpload(files);
