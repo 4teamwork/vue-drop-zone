@@ -76,6 +76,7 @@ by the client itself.
 - dropped: Triggers when the files are dropped
 - success: Triggers when the upload successfully finished
 - error(File file): Triggers when the upload fails. Also provides the file
+- upload(File[] files): Triggers when preventUpload is set to true and the upload would start. Also provides the files being uploaded
 that failed the first as an event argument.
 
 ## Development

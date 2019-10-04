@@ -186,4 +186,11 @@ describe('DropZone', () => {
 
     expect(w.vm.client.upload).not.toHaveBeenCalled();
   });
+
+  test('triggers upload event when files are being uploaded', async () => {
+    w = await localMount(DropZone, { propsData: { options: { preventUpload: true } } });
+    w.trigger('drop', { dataTransfer: { files: [new File([''], 'file1', { type: 'text' })], types: ['Files'] } });
+    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'dropped', 'upload']);
+    expect(w.emittedByOrder()[3].args[0][0].name).toEqual('file1');
+  });
 });

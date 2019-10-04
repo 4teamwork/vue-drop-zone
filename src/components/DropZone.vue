@@ -82,7 +82,9 @@ export default {
     },
     async handleUpload(files) {
       try {
-        if (!this.options.preventUpload) {
+        if (this.options.preventUpload) {
+          this.$emit('upload', files);
+        } else {
           await this.client.upload(Array.from(files));
         }
       } catch (error) {
