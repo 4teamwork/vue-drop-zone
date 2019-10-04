@@ -1,6 +1,7 @@
 import DropZone from '@/components/DropZone.vue';
 import { localMount, freezeTime } from './support';
 import { flatMap } from 'lodash';
+import Client from '../../src/client';
 
 function assertUppyFiles(w, expected) {
   expect(
@@ -18,6 +19,8 @@ describe('DropZone', () => {
   beforeEach(async () => {
     w = await localMount(DropZone);
     now = freezeTime();
+    // Mock the clients upload function
+    Client.prototype.upload = jest.fn();
   });
 
   test('Component renders', () => {
@@ -98,7 +101,7 @@ describe('DropZone', () => {
           bytesUploaded: 0,
           percentage: 0,
           uploadComplete: false,
-          uploadStarted: false,
+          uploadStarted: null,
         },
         remote: '',
         size: 0,
@@ -170,5 +173,17 @@ describe('DropZone', () => {
     w = await localMount(DropZone, { propsData: { fileBrowser: true } });
     expect(w.find('label').attributes('for')).toBe('268d77d2-420b-4be9-a814-d5063fe76fb6');
     expect(w.find('input').attributes('id')).toBe('268d77d2-420b-4be9-a814-d5063fe76fb6');
+  });
+
+  test('triggers the upload with the dropped files', async () => {
+    w.trigger('drop', { dataTransfer: { files: [new File([''], 'file1', { type: 'text' })], types: ['Files'] } });
+    expect(w.vm.client.upload.mock.calls[0][0][0].name).toEqual('file1');
+  });
+
+  test('does not upload when preventUpload is set to true', async () => {
+    w = await localMount(DropZone, { propsData: { options: { preventUpload: true } } });
+    w.trigger('drop', { dataTransfer: { files: [], types: ['Files'] } });
+
+    expect(w.vm.client.upload).not.toHaveBeenCalled();
   });
 });
