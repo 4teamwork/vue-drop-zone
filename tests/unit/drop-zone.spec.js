@@ -1,6 +1,6 @@
+import { flatMap } from 'lodash';
 import DropZone from '@/components/DropZone.vue';
 import { localMount, freezeTime } from './support';
-import { flatMap } from 'lodash';
 import Client from '../../src/client';
 
 function assertUppyFiles(w, expected) {

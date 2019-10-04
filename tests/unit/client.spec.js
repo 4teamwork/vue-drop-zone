@@ -1,5 +1,5 @@
-import Client from '@/client';
 import Vue from 'vue';
+import Client from '@/client';
 
 function assertFiles(c, expected) {
   const { files } = c.uppy.getState();
