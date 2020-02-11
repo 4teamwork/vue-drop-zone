@@ -9,7 +9,7 @@
         v-if="fileBrowser"
         :id="uuid"
         @change="handleFileInput"
-        multiple
+        :multiple="multiple"
         type="file"
         style="display: none;" />
     <slot />
@@ -52,6 +52,10 @@ export default {
       type: Boolean,
       default: () => false,
     },
+    multiple: {
+      type: Boolean,
+      default: () => true,
+    },
   },
   methods: {
     handleDragEnter({ dataTransfer: { types } }) {
@@ -75,7 +79,12 @@ export default {
 
       this.dragCount = 0;
       this.$emit('dropped');
-      this.handleUpload(files);
+
+      if (!this.multiple && files.length > 1) {
+        this.$emit('maxFilesExceeded');
+      } else {
+        this.handleUpload(files);
+      }
     },
     handleFileInput({ target: { files } }) {
       this.handleUpload(files);

@@ -50,6 +50,7 @@ import DropZone from '@4tw/vue-drop-zone'
 - v-model[Array:[]]: Use the v-model to have a list of uppy files in the current state (https://uppy.io/docs/uppy/#uppy-getFile-fileID)
 - file-browser[Boolean:false]: Define if the dropzone should also be clickable to allow the user
 to select the files using the native file browser.
+- multiple[Boolean:true]: Define if multiple files can be uploaded.
 
 ### Uppy Client
 
