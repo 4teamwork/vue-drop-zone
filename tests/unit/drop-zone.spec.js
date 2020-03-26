@@ -1,6 +1,6 @@
 import { flatMap } from 'lodash';
 import DropZone from '@/components/DropZone.vue';
-import { localMount, freezeTime } from './support';
+import { localMount } from './support';
 import Client from '../../src/client';
 
 function assertUppyFiles(w, expected) {
@@ -14,11 +14,9 @@ function assertUppyFiles(w, expected) {
 
 describe('DropZone', () => {
   let w;
-  let now;
 
   beforeEach(async () => {
     w = await localMount(DropZone);
-    now = freezeTime();
     // Mock the clients upload function
     Client.prototype.upload = jest.fn();
   });
@@ -78,35 +76,37 @@ describe('DropZone', () => {
       { args: [], name: 'entered' },
     ]);
 
-    const file = new File([''], 'file1', { type: 'text' });
-    w.vm.client.addFile(file);
+    w.vm.client.addFile({ name: 'file1', data: '' });
 
     // Check the drop event
     w.trigger('drop', { dataTransfer: { files: [], types: ['Files'] } });
 
     const inputEvent = [
       {
-        data: file,
+        data: {
+          data: '',
+          name: 'file1',
+        },
         extension: '',
-        id: `uppy-file1-text-${now}`,
+        id: 'uppy-file1-application/octet-stream',
         isRemote: false,
         meta: {
           name: 'file1',
-          type: 'text',
+          type: 'application/octet-stream',
         },
         name: 'file1',
         preview: undefined,
         progress: {
-          bytesTotal: 0,
+          bytesTotal: null,
           bytesUploaded: 0,
           percentage: 0,
           uploadComplete: false,
           uploadStarted: null,
         },
         remote: '',
-        size: 0,
+        size: null,
         source: '',
-        type: 'text',
+        type: 'application/octet-stream',
       },
     ];
 

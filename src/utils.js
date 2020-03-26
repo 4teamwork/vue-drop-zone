@@ -19,10 +19,3 @@ export function resolveComponents(components) {
     return { component: component.default || component, name, fileName };
   });
 }
-
-export function updateLastModified(file) {
-  return new File([file], file.name, {
-    type: file.type,
-    lastModified: new Date().getTime(),
-  });
-}

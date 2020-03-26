@@ -2,7 +2,6 @@ import Uppy from '@uppy/core';
 import Tus from '@uppy/tus';
 import XHR from '@uppy/xhr-upload';
 import VueStore from './vuestore';
-import { updateLastModified } from './utils';
 
 function isFile(file) {
   const reader = new FileReader();
@@ -84,6 +83,6 @@ export default class Client {
   }
 
   addFile(file) {
-    this.uppy.addFile({ name: file.name, type: file.type, data: updateLastModified(file) });
+    this.uppy.addFile({ name: file.name, type: file.type, data: file });
   }
 }
