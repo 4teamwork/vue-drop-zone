@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
-import MockDate from 'mockdate';
 import { createLocalVue } from '@vue/test-utils';
 import requireContext from 'require-context';
 import { resolveComponents } from '@/utils';
@@ -45,5 +44,4 @@ global.beforeEach(() => {
     localVue.component(name, component);
   });
   global.localVue = localVue;
-  MockDate.reset();
 });
