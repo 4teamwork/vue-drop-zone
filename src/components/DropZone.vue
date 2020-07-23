@@ -4,6 +4,7 @@
       @dragleave="handleDragLeave"
       @drop="handleDrop"
       :for="uuid"
+      :class="{ disabled }"
   >
     <input
         v-if="fileBrowser"
@@ -11,6 +12,7 @@
         @change="handleFileInput"
         :multiple="multiple"
         type="file"
+        :disabled="disabled"
         style="display: none;" />
     <slot />
   </label>
@@ -56,9 +58,14 @@ export default {
       type: Boolean,
       default: () => true,
     },
+    disabled: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   methods: {
     handleDragEnter({ dataTransfer: { types } }) {
+      if (this.disabled) return
       if (!types.includes('Files')) { return; }
 
       if (this.dragCount === 0) {
@@ -67,6 +74,7 @@ export default {
       this.dragCount += 1;
     },
     handleDragLeave({ dataTransfer: { types } }) {
+      if (this.disabled) return
       if (!types.includes('Files')) { return; }
 
       this.dragCount -= 1;
@@ -75,6 +83,7 @@ export default {
       }
     },
     handleDrop({ dataTransfer: { files, types } }) {
+      if (this.disabled) return
       if (!types.includes('Files')) { return; }
 
       this.dragCount = 0;
@@ -87,6 +96,7 @@ export default {
       }
     },
     handleFileInput({ target: { files } }) {
+      if (this.disabled) return
       this.handleUpload(files);
     },
     async handleUpload(files) {
