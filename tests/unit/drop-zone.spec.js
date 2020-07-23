@@ -193,4 +193,17 @@ describe('DropZone', () => {
     expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'dropped', 'upload']);
     expect(w.emittedByOrder()[3].args[0][0].name).toEqual('file1');
   });
+
+  test('drop zone can be disabled', async () => {
+    w = await localMount(DropZone, { propsData: { disabled: true, fileBrowser: true } });
+    w.trigger('dragenter', { dataTransfer: { types: ['Files'] } });
+    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input']);
+    w.trigger('dragleave', { dataTransfer: { types: ['Files'] } });
+    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input']);
+    w.trigger('drop', { dataTransfer: { types: ['Files'] } });
+    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input']);
+
+    expect(w.find('input').attributes('disabled')).toEqual('disabled');
+    expect(w.find('label').classes()).toEqual(['disabled']);
+  });
 });
