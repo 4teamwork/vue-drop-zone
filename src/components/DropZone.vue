@@ -50,6 +50,15 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    /**
+     * A list of uppy plugins in the format:
+     * [PluginClass] or
+     * [[PluginClass, PluginOptions]] if providing plugin options
+     */
+    plugins: {
+      type: Array,
+      default: () => ([]),
+    },
     fileBrowser: {
       type: Boolean,
       default: () => false,
@@ -127,6 +136,7 @@ export default {
       { uploader: { endpoint: this.endpoint }, mode: this.mode },
     );
     this.client = new Client(this, options);
+    this.plugins.forEach(plugin => this.client.uppy.use(...[plugin].flatMap(p => p)));
     this.client.uppy.on('upload-error', file => this.$emit('error', file));
     this.client.uppy.on('upload-success', () => this.$emit('success'));
   },
