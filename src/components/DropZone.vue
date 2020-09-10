@@ -50,6 +50,15 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    /**
+     * A list of uppy plugins in the format:
+     * [PluginClass] or
+     * [[PluginClass, PluginOptions]] if providing plugin options
+     */
+    plugins: {
+      type: Array,
+      default: () => ([]),
+    },
     fileBrowser: {
       type: Boolean,
       default: () => false,
@@ -65,7 +74,7 @@ export default {
   },
   methods: {
     handleDragEnter({ dataTransfer: { types } }) {
-      if (this.disabled) return
+      if (this.disabled) return;
       if (!types.includes('Files')) { return; }
 
       if (this.dragCount === 0) {
@@ -74,7 +83,7 @@ export default {
       this.dragCount += 1;
     },
     handleDragLeave({ dataTransfer: { types } }) {
-      if (this.disabled) return
+      if (this.disabled) return;
       if (!types.includes('Files')) { return; }
 
       this.dragCount -= 1;
@@ -83,7 +92,7 @@ export default {
       }
     },
     handleDrop({ dataTransfer: { files, types } }) {
-      if (this.disabled) return
+      if (this.disabled) return;
       if (!types.includes('Files')) { return; }
 
       this.dragCount = 0;
@@ -96,7 +105,7 @@ export default {
       }
     },
     handleFileInput({ target: { files } }) {
-      if (this.disabled) return
+      if (this.disabled) return;
       this.handleUpload(files);
     },
     async handleUpload(files) {
@@ -127,6 +136,7 @@ export default {
       { uploader: { endpoint: this.endpoint }, mode: this.mode },
     );
     this.client = new Client(this, options);
+    this.plugins.forEach(plugin => this.client.uppy.use(...[plugin].flatMap(p => p)));
     this.client.uppy.on('upload-error', file => this.$emit('error', file));
     this.client.uppy.on('upload-success', () => this.$emit('success'));
   },

@@ -206,4 +206,55 @@ describe('DropZone', () => {
     expect(w.find('input').attributes('disabled')).toEqual('disabled');
     expect(w.find('label').classes()).toEqual(['disabled']);
   });
+
+  test('can extend the uppy client with a plugin', async () => {
+    const installFunction = jest.fn();
+    function ExamplePlugin() {
+      return {
+        id: 'example-plugin',
+        type: 'example',
+        install: installFunction,
+      };
+    }
+    w = await localMount(DropZone, { propsData: { plugins: [ExamplePlugin] } });
+
+    expect(installFunction).toHaveBeenCalled();
+  });
+
+  test('can extend the uppy client with multiple plugins', async () => {
+    const installFunction = jest.fn();
+    function ExamplePlugin1() {
+      return {
+        id: 'example-plugin-1',
+        type: 'example',
+        install: installFunction,
+      };
+    }
+    function ExamplePlugin2() {
+      return {
+        id: 'example-plugin-2',
+        type: 'example',
+        install: installFunction,
+      };
+    }
+    w = await localMount(DropZone, { propsData: { plugins: [ExamplePlugin1, ExamplePlugin2] } });
+
+    expect(installFunction).toHaveBeenCalledTimes(2);
+  });
+
+  test('can extend provided plugins with options', async () => {
+    const options = { option1: 'option-1' };
+    const providedOpts = jest.fn();
+    function ExamplePlugin(uppy, opts) {
+      providedOpts(opts);
+      return {
+        id: 'example-plugin',
+        type: 'example',
+        install: () => {},
+      };
+    }
+    w = await localMount(DropZone, { propsData: { plugins: [[ExamplePlugin, options]] } });
+
+    expect(providedOpts).toHaveBeenCalledWith(options);
+  });
 });
