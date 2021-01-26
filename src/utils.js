@@ -1,5 +1,6 @@
 import path from 'path';
-import { upperFirst, camelCase } from 'lodash';
+import upperFirst from 'lodash/upperFirst';
+import camelCase from 'lodash/camelCase';
 
 export function toPascalCase(string) {
   return upperFirst(camelCase(string));

@@ -1,4 +1,4 @@
-import { flatMap } from 'lodash';
+import flatMap from 'lodash/flatMap';
 import DropZone from '@/components/DropZone.vue';
 import { localMount } from './support';
 import Client from '../../src/client';
