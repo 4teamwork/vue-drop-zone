@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import Tus from '@uppy/tus';
 import Client from '@/client';
 
 function assertFiles(c, expected) {
@@ -15,7 +16,7 @@ describe('client', () => {
   });
 
   test('initializes uppy client', () => {
-    const client = new Client(new Vue());
+    const client = new Client(new Vue(), { uploaderClass: Tus });
     expect(client.uppy).not.toBeUndefined();
 
     // Installs tus plugin
@@ -26,45 +27,46 @@ describe('client', () => {
   });
 
   test('accepts uploader options', () => {
-    const client = new Client(new Vue());
+    const client = new Client(new Vue(), { uploaderClass: Tus, options: { resume: false } });
     expect(client.uppy.getPlugin('Tus').opts)
       .toEqual({
         resume: false,
         autoRetry: true,
+        limit: 0,
         useFastRemoteRetry: true,
-        limit: 1,
         retryDelays: [0, 1000, 3000, 5000],
-        headers: { Accept: 'application/json' },
       });
 
-    const clientWithOptions = new Client(new Vue(), { uploader: { resume: true } });
+    const clientWithOptions = new Client(
+      new Vue(),
+      { uploaderClass: Tus, options: { resume: true } },
+    );
     expect(clientWithOptions.uppy.getPlugin('Tus').opts)
       .toEqual({
         resume: true,
         autoRetry: true,
+        limit: 0,
         useFastRemoteRetry: true,
-        limit: 1,
         retryDelays: [0, 1000, 3000, 5000],
-        headers: { Accept: 'application/json' },
       });
   });
 
   test('accepts uppy options', () => {
-    const client = new Client(new Vue());
+    const client = new Client(new Vue(), { uploaderClass: Tus });
     expect(client.uppy.opts.meta).toEqual({});
 
-    const clientWithMeta = new Client(new Vue(), { uppy: { meta: { some: 'meta' } } });
+    const clientWithMeta = new Client(new Vue(), { uploaderClass: Tus }, { uppy: { meta: { some: 'meta' } } });
     expect(clientWithMeta.uppy.opts.meta).toEqual({ some: 'meta' });
   });
 
   test('adds files to the store', () => {
-    const client = new Client(new Vue());
+    const client = new Client(new Vue(), { uploaderClass: Tus });
     client.addFile({ name: 'file', type: 'image/png', data: '' });
     assertFiles(client, ['file']);
   });
 
   test('resets uppy client', () => {
-    const client = new Client(new Vue(), { uploader: { resume: true } });
+    const client = new Client(new Vue(), { uploaderClass: Tus, options: { resume: true } });
     client.addFile({ name: 'file', type: 'image/png', data: '' });
     assertFiles(client, ['file']);
     expect(client.uppy.getPlugin('Tus').opts)
@@ -72,9 +74,8 @@ describe('client', () => {
         resume: true,
         autoRetry: true,
         useFastRemoteRetry: true,
-        limit: 1,
+        limit: 0,
         retryDelays: [0, 1000, 3000, 5000],
-        headers: { Accept: 'application/json' },
       });
 
     client.reset();
@@ -83,29 +84,17 @@ describe('client', () => {
         resume: true,
         autoRetry: true,
         useFastRemoteRetry: true,
-        limit: 1,
+        limit: 0,
         retryDelays: [0, 1000, 3000, 5000],
-        headers: { Accept: 'application/json' },
       });
     assertFiles(client, []);
   });
 
-  test('supports tus and xhr upload', () => {
-    // Default is tus
-    const client = new Client(new Vue());
-    expect(client.uppy.plugins.uploader.map(u => u.title))
-      .toEqual(['Tus']);
-
-    client.reset({ mode: 'XHR' });
-    expect(client.uppy.plugins.uploader.map(u => u.title))
-      .toEqual(['XHRUpload']);
-  });
-
   test('changes endpoint', () => {
-    const client = new Client(new Vue(), { uploader: { endpoint: 'path1' } });
+    const client = new Client(new Vue(), { uploaderClass: Tus, options: { endpoint: 'path1' } });
     expect(client.uppy.getPlugin('Tus').opts.endpoint).toBe('path1');
 
-    client.updateEndpoint('path2');
+    client.updateEndpoint('path2', 'Tus');
     expect(client.uppy.getPlugin('Tus').opts.endpoint).toBe('path2');
   });
 });

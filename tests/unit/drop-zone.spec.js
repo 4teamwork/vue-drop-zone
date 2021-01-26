@@ -1,7 +1,8 @@
-import { flatMap } from 'lodash';
+import flatMap from 'lodash/flatMap';
 import DropZone from '@/components/DropZone.vue';
 import { localMount } from './support';
 import Client from '../../src/client';
+import XHRUpload from '@uppy/xhr-upload';
 
 function assertUppyFiles(w, expected) {
   expect(
@@ -160,9 +161,10 @@ describe('DropZone', () => {
     expect(w.vm.client.uppy.getState().files).toEqual({});
   });
 
-  test('run the drop zone in XHR mode', async () => {
+  test('change the uploader', async () => {
     expect(w.emittedByOrder().length).toBe(2);
-    w.setProps({ mode: 'XHR' });
+
+    w.setProps({ uploader: { uploaderClass: XHRUpload } });
 
     await w.vm.$nextTick();
     expect(w.vm.client.uppy.plugins.uploader.map(u => u.title))
