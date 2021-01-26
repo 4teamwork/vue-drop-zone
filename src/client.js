@@ -1,6 +1,4 @@
 import Uppy from '@uppy/core';
-import Tus from '@uppy/tus';
-import XHR from '@uppy/xhr-upload';
 import VueStore from './vuestore';
 
 function isFile(file) {
@@ -32,47 +30,26 @@ function createUppyClient(vm, options = {}) {
   }, options));
 }
 
-const MODE_MAPPING = {
-  TUS: {
-    id: 'Tus',
-    uploader: Tus,
-    options: {
-      headers: { Accept: 'application/json' },
-      limit: 1,
-      resume: false,
-    },
-  },
-  XHR: {
-    uploader: XHR,
-    id: 'XHRUpload',
-  },
-};
-
-export const MODES = Object.keys(MODE_MAPPING);
-
-export const DEFAULT_MODE = 'TUS';
-
 export default class Client {
-  constructor(vm, options = {}) {
+  constructor(vm, uploader, options = {}) {
+    this.uploader = uploader;
     this.uppy = createUppyClient(vm, options.uppy);
-    this.installPlugin(options.uploader, options.mode);
+    this.installPlugin(uploader.uploaderClass, uploader.options);
   }
 
-  installPlugin(options = {}, mode = DEFAULT_MODE) {
-    this.uppy.use(
-      MODE_MAPPING[mode].uploader,
-      Object.assign(MODE_MAPPING[mode].options || {}, options),
-    );
+  installPlugin(plugin, options = {}) {
+    this.uppy.use(plugin, options);
   }
 
-  updateEndpoint(endpoint, { mode = DEFAULT_MODE } = {}) {
-    this.uppy.getPlugin(MODE_MAPPING[mode].id).opts.endpoint = endpoint;
+  updateEndpoint(endpoint, pluginId) {
+    this.uppy.getPlugin(pluginId).opts.endpoint = endpoint;
   }
 
-  reset(options = {}) {
+  reset(uploader) {
     if (this.uppy) {
       this.uppy.close();
-      this.installPlugin(options.uploader, options.mode);
+      const { uploaderClass, options } = uploader || this.uploader;
+      this.installPlugin(uploaderClass, options || {});
     }
   }
 

@@ -20,11 +20,15 @@
 
 <script>
 import uuidv4 from 'uuid/v4';
+import Tus from '@uppy/tus';
 import merge from 'lodash/merge';
-import Client, { MODES, DEFAULT_MODE } from '../client';
+import Client from '../client';
 
 export default {
   name: 'DropZone',
+
+  UPLOADER_ID: 'vue-drop-zone-uploader',
+
   data() {
     return {
       dragCount: 0,
@@ -41,10 +45,16 @@ export default {
       type: String,
       default: () => document.URL,
     },
-    mode: {
-      type: String,
-      default: () => DEFAULT_MODE,
-      validator: m => MODES.includes(m),
+    uploader: {
+      type: Object,
+      default: () => ({
+        uploaderClass: Tus,
+        options: {
+          headers: { Accept: 'application/json' },
+          limit: 1,
+          resume: false,
+        },
+      }),
     },
     options: {
       type: Object,
@@ -70,6 +80,14 @@ export default {
     disabled: {
       type: Boolean,
       default: () => false,
+    },
+  },
+  computed: {
+    enrichedUploader() {
+      return merge(
+        this.uploader,
+        { options: { endpoint: this.endpoint, id: this.$options.UPLOADER_ID } },
+      );
     },
   },
   methods: {
@@ -131,11 +149,7 @@ export default {
     window.addEventListener('dragover', this.preventDefault);
     window.addEventListener('drop', this.preventDefault);
 
-    const options = merge(
-      this.options,
-      { uploader: { endpoint: this.endpoint }, mode: this.mode },
-    );
-    this.client = new Client(this, options);
+    this.client = new Client(this, this.enrichedUploader, this.options);
     this.plugins.forEach(plugin => this.client.uppy.use(...[plugin].flatMap(p => p)));
     this.client.uppy.on('upload-error', file => this.$emit('error', file));
     this.client.uppy.on('upload-success', (...props) => this.$emit('success', ...props));
@@ -145,8 +159,8 @@ export default {
     window.removeEventListener('drop', this.preventDefault);
   },
   watch: {
-    endpoint(endpoint) { this.client.updateEndpoint(endpoint, this.options); },
-    mode(mode) { this.client.reset(merge(this.options, { mode })); },
+    endpoint(endpoint) { this.client.updateEndpoint(endpoint, this.$options.UPLOADER_ID); },
+    enrichedUploader(uploader) { this.client.reset(uploader); },
   },
 };
 </script>
