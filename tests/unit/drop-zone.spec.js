@@ -1,15 +1,16 @@
 import flatMap from 'lodash/flatMap';
+import XHRUpload from '@uppy/xhr-upload';
+import get from 'lodash/get';
 import DropZone from '@/components/DropZone.vue';
 import { localMount } from './support';
 import Client from '../../src/client';
-import XHRUpload from '@uppy/xhr-upload';
 
 function assertUppyFiles(w, expected) {
   expect(
     flatMap(
       flatMap(w.emittedByOrder(), e => e.args),
       l => l,
-    ).map(u => u.meta.name),
+    ).map(u => get(u, 'meta.name')).filter(Boolean),
   ).toEqual(expected);
 }
 
@@ -31,6 +32,7 @@ describe('DropZone', () => {
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
+      { args: expect.anything(), name: 'client-initialized' },
       { args: [], name: 'entered' },
     ]);
 
@@ -39,6 +41,7 @@ describe('DropZone', () => {
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
+      { args: expect.anything(), name: 'client-initialized' },
       { args: [], name: 'entered' },
     ]);
 
@@ -46,6 +49,7 @@ describe('DropZone', () => {
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
+      { args: expect.anything(), name: 'client-initialized' },
       { args: [], name: 'entered' },
     ]);
 
@@ -54,6 +58,7 @@ describe('DropZone', () => {
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
+      { args: expect.anything(), name: 'client-initialized' },
       { args: [], name: 'entered' },
       { args: [], name: 'left' },
     ]);
@@ -63,6 +68,7 @@ describe('DropZone', () => {
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
+      { args: expect.anything(), name: 'client-initialized' },
       { args: [], name: 'entered' },
       { args: [], name: 'left' },
     ]);
@@ -72,6 +78,7 @@ describe('DropZone', () => {
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
+      { args: expect.anything(), name: 'client-initialized' },
       { args: [], name: 'entered' },
       { args: [], name: 'left' },
       { args: [], name: 'entered' },
@@ -114,6 +121,7 @@ describe('DropZone', () => {
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
+      { args: expect.anything(), name: 'client-initialized' },
       { args: [], name: 'entered' },
       { args: [], name: 'left' },
       { args: [], name: 'entered' },
@@ -126,6 +134,7 @@ describe('DropZone', () => {
     expect(w.emittedByOrder()).toEqual([
       { args: [[]], name: 'input' },
       { args: [[]], name: 'input' },
+      { args: expect.anything(), name: 'client-initialized' },
       { args: [], name: 'entered' },
       { args: [], name: 'left' },
       { args: [], name: 'entered' },
@@ -139,20 +148,20 @@ describe('DropZone', () => {
     assertUppyFiles(w, []);
 
     w.vm.client.addFile({ name: 'file1', data: '' });
-    expect(w.emittedByOrder().length).toBe(3);
-    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'input']);
+    expect(w.emittedByOrder().length).toBe(4);
+    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'client-initialized', 'input']);
     assertUppyFiles(w, ['file1']);
 
     w.vm.client.addFile({ name: 'file2', data: '' });
-    expect(w.emittedByOrder().length).toBe(4);
-    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'input', 'input']);
+    expect(w.emittedByOrder().length).toBe(5);
+    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'client-initialized', 'input', 'input']);
     assertUppyFiles(w, ['file1', 'file1', 'file2']);
   });
 
   test('control the drop zone with the client', () => {
     w.vm.client.addFile({ name: 'file1', data: '' });
-    expect(w.emittedByOrder().length).toBe(3);
-    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'input']);
+    expect(w.emittedByOrder().length).toBe(4);
+    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'client-initialized', 'input']);
     assertUppyFiles(w, ['file1']);
 
     w.vm.client.reset();
@@ -162,7 +171,7 @@ describe('DropZone', () => {
   });
 
   test('change the uploader', async () => {
-    expect(w.emittedByOrder().length).toBe(2);
+    expect(w.emittedByOrder().length).toBe(3);
 
     w.setProps({ uploader: { uploaderClass: XHRUpload } });
 
@@ -192,18 +201,18 @@ describe('DropZone', () => {
   test('triggers upload event when files are being uploaded', async () => {
     w = await localMount(DropZone, { propsData: { options: { preventUpload: true } } });
     w.trigger('drop', { dataTransfer: { files: [new File([''], 'file1', { type: 'text' })], types: ['Files'] } });
-    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'dropped', 'upload']);
-    expect(w.emittedByOrder()[3].args[0][0].name).toEqual('file1');
+    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'client-initialized', 'dropped', 'upload']);
+    expect(w.emittedByOrder()[4].args[0][0].name).toEqual('file1');
   });
 
   test('drop zone can be disabled', async () => {
     w = await localMount(DropZone, { propsData: { disabled: true, fileBrowser: true } });
     w.trigger('dragenter', { dataTransfer: { types: ['Files'] } });
-    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input']);
+    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'client-initialized']);
     w.trigger('dragleave', { dataTransfer: { types: ['Files'] } });
-    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input']);
+    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'client-initialized']);
     w.trigger('drop', { dataTransfer: { types: ['Files'] } });
-    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input']);
+    expect(w.emittedByOrder().map(e => e.name)).toEqual(['input', 'input', 'client-initialized']);
 
     expect(w.find('input').attributes('disabled')).toEqual('disabled');
     expect(w.find('label').classes()).toEqual(['disabled']);

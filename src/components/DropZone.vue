@@ -153,6 +153,7 @@ export default {
     this.plugins.forEach(plugin => this.client.uppy.use(...[plugin].flatMap(p => p)));
     this.client.uppy.on('upload-error', file => this.$emit('error', file));
     this.client.uppy.on('upload-success', (...props) => this.$emit('success', ...props));
+    this.$emit('client-initialized', this.client);
   },
   destroyed() {
     window.removeEventListener('dragover', this.preventDefault);
