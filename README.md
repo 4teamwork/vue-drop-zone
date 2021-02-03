@@ -71,6 +71,7 @@ by the client itself.
 
 ### Events
 
+- client-initialized: Triggers when the drop-zone client has been initialized. Use this event to customize the client.
 - entered: Triggers when the mouse pointer enters the dropping area
 - left: Triggers when the mouse poiter has left the dropping area
 - dropped: Triggers when the files are dropped
